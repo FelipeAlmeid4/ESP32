@@ -1,0 +1,11 @@
+## No ESP-IDF 6.0+ os componentes MQTT e cJSON sairam do ESP-IDF e vem do
+## Component Registry. No 5.x eles ja fazem parte do ESP-IDF, entao sao ignorados aqui.
+dependencies:
+  espressif/mqtt:
+    version: "^1.0.0"
+    rules:
+      - if: "idf_version >=6.0"
+  espressif/cjson:
+    version: "^1.7.19"
+    rules:
+      - if: "idf_version >=6.0"

@@ -44,7 +44,10 @@ de `limite - histerese` (padrão 1 °C / 1 %), evitando liga/desliga na fronteir
 
 Ambos podem ser alterados no `menuconfig`.
 
-## Compilar e gravar (ESP-IDF 5.x)
+## Compilar e gravar (ESP-IDF 5.x ou 6.x)
+
+No ESP-IDF 6.0+, os componentes `mqtt` e `cJSON` vêm do Component Registry
+(`main/idf_component.yml`). Por isso o primeiro build precisa de internet para baixá-los.
 
 ```bash
 idf.py set-target esp32s2
