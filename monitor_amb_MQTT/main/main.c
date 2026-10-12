@@ -244,6 +244,13 @@ static void sensor_task(void *arg)
 /* ------------------------------------------------------------------ */
 void app_main(void)
 {
+#if CONFIG_ESP_CONSOLE_USB_CDC
+    /* Com o console na USB nativa, a porta COM so aparece depois do boot.
+     * Espera um pouco para o monitor conectar e nao perder as primeiras mensagens. */
+    vTaskDelay(pdMS_TO_TICKS(3000));
+#endif
+    ESP_LOGI(TAG, "Monitor ambiental MQTT iniciando...");
+
     esp_err_t err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
