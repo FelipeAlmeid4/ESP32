@@ -1,0 +1,112 @@
+menu "Monitor Ambiental MQTT"
+
+    choice APP_ROLE
+        prompt "Funcao desta placa"
+        default APP_ROLE_SENSOR_AND_ALARM
+        help
+            SENSOR: le o DHT11 e publica dados/alarme.
+            ALARME: apenas assina o topico de alarme e aciona o LED (segunda placa).
+            AMBOS: a mesma placa publica e tambem assina o topico de alarme
+                   (simula a segunda placa; o LED acende pelo caminho do broker).
+
+        config APP_ROLE_SENSOR_AND_ALARM
+            bool "Sensor + assinante de alarme (uma placa so)"
+        config APP_ROLE_SENSOR
+            bool "Somente sensor (publicador)"
+        config APP_ROLE_ALARM
+            bool "Somente assinante de alarme (LED)"
+    endchoice
+
+    config APP_HAS_SENSOR
+        bool
+        default y if APP_ROLE_SENSOR_AND_ALARM || APP_ROLE_SENSOR
+
+    config APP_HAS_ALARM_LED
+        bool
+        default y if APP_ROLE_SENSOR_AND_ALARM || APP_ROLE_ALARM
+
+    menu "Wi-Fi"
+        config WIFI_SSID
+            string "SSID"
+            default "minha_rede"
+
+        config WIFI_PASSWORD
+            string "Senha"
+            default "minha_senha"
+    endmenu
+
+    menu "MQTT"
+        config MQTT_BROKER_URI
+            string "URI do broker"
+            default "mqtt://broker.hivemq.com"
+            help
+                Ex.: mqtt://broker.hivemq.com, mqtt://test.mosquitto.org,
+                mqtt://192.168.0.10:1883
+
+        config MQTT_USERNAME
+            string "Usuario (vazio = sem autenticacao)"
+            default ""
+
+        config MQTT_PASSWORD
+            string "Senha (vazio = sem autenticacao)"
+            default ""
+
+        config MQTT_TOPIC_BASE
+            string "Prefixo dos topicos"
+            default "franzininho/lab01"
+            help
+                Topicos gerados: <prefixo>/temperatura, <prefixo>/umidade,
+                <prefixo>/alarme e <prefixo>/status.
+                Em broker publico, use um prefixo unico para nao misturar
+                com dados de outras pessoas. As duas placas devem usar o
+                mesmo prefixo.
+    endmenu
+
+    menu "Sensor e limites"
+        depends on APP_HAS_SENSOR
+
+        config DHT11_GPIO
+            int "GPIO do DHT11"
+            default 15
+            help
+                Na Franzininho WiFi LAB01 o DHT11 esta ligado ao GPIO15.
+
+        config SENSOR_PERIOD_S
+            int "Intervalo de leitura (s)"
+            range 2 3600
+            default 60
+
+        config TEMP_LIMIT_C
+            int "Limite de temperatura (C)"
+            default 30
+
+        config HUM_LIMIT_PCT
+            int "Limite de umidade (%)"
+            range 0 100
+            default 70
+
+        config ALARM_HYSTERESIS
+            int "Histerese para desligar o alarme (C / %)"
+            range 0 20
+            default 1
+            help
+                O alarme so volta a "OFF" quando o valor cair abaixo de
+                (limite - histerese), evitando liga/desliga na fronteira.
+    endmenu
+
+    menu "LED de alarme"
+        depends on APP_HAS_ALARM_LED
+
+        config ALARM_LED_GPIO
+            int "GPIO do LED"
+            default 14
+            help
+                LED RGB da Franzininho WiFi LAB01: vermelho GPIO14,
+                verde GPIO13, azul GPIO12.
+
+        config ALARM_LED_ACTIVE_LOW
+            bool "LED aceso em nivel baixo"
+            default n
+    endmenu
+
+endmenu

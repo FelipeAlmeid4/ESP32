@@ -1,0 +1,9 @@
+# Franzininho WiFi LAB01 (ESP32-S2, 4 MB flash)
+CONFIG_IDF_TARGET="esp32s2"
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+
+# A Franzininho WiFi usa a USB nativa do ESP32-S2 para gravar e para o console.
+# Se sua placa usar um conversor USB-serial externo, troque por CONFIG_ESP_CONSOLE_UART_DEFAULT=y
+CONFIG_ESP_CONSOLE_USB_CDC=y
+
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
